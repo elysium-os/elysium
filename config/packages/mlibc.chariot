@@ -1,0 +1,92 @@
+// Frigg
+source/frigg {
+    url: "https://github.com/managarm/frigg.git"
+    type: "git"
+    revision: "41b8f556db2646c4417d227b5174a66f03d86a43"
+}
+
+package/frigg {
+    dependencies: [ source/frigg source/support tool/pkgconf image/meson ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/elysium.cross-file \
+            --prefix=$PREFIX \
+            --buildtype=release \
+            --includedir=share/frigg/include \
+            -Dbuild_tests=disabled \
+            $SOURCES_DIR/frigg
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}
+
+// Linux Headers
+source/linux_headers {
+    url: "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.8.tar.xz"
+    type: "tar.xz"
+    b2sum: "62a3f435bbe7d24bea361f2545ba50f8b36030a98bd28d0979b86052d8af34dc7a4c27f7ca2890daba5e5bb51f5848e6b21cd5df4dbbd19919867bf67d38790d"
+}
+
+package/linux_headers {
+    dependencies: [ source/linux_headers image/gcc image/rsync ]
+    install: <sh>
+        make -C $SOURCES_DIR/linux_headers headers_install ARCH=x86_64 INSTALL_HDR_PATH=${INSTALL_DIR}${PREFIX}/share/linux_headers
+    </sh>
+}
+
+//MLibc
+source/mlibc-sysdeps {
+    url: "mlibc-sysdeps"
+    type: "local"
+}
+
+source/mlibc {
+    url: "https://github.com/managarm/mlibc/archive/b25158194865c41c5b7747b71f7cfb023e172731.tar.gz"
+    b2sum: "522edd360162bf7090c79c9c41e1d0857b204bb9a50badb2c79d54ed1a909805fb94cd38a64de55e9702d162acc256d91c1b8daaf5457082cebe6942c888b19a"
+    type: "tar.gz"
+    patch: "patches/mlibc.diff"
+    dependencies: [ source/mlibc-sysdeps ]
+    regenerate: <sh>cp -r $SOURCES_DIR/mlibc-sysdeps/elysium ./sysdeps/</sh>
+}
+
+package/mlibc_headers {
+    dependencies: [ source/mlibc source/support tool/pkgconf image/meson ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/elysium.cross-file \
+            --prefix=$PREFIX \
+            --buildtype=release \
+            -Dheaders_only=true \
+            -Dlinux_option=disabled \
+            $SOURCES_DIR/mlibc
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}
+
+package/mlibc {
+    dependencies: [
+        source/mlibc
+        source/support
+        tool/gcc_bootstrap
+        tool/pkgconf
+        package/mlibc_headers
+        package/frigg
+        package/freestanding_c_headers
+        package/freestanding_cxx_headers
+        image/meson
+    ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/elysium.cross-file \
+            --prefix=$PREFIX \
+            --libdir=lib \
+            --buildtype=debug \
+            -Dno_headers=true \
+            -Ddefault_library=both \
+            -Dlinux_option=disabled \
+            $SOURCES_DIR/mlibc
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}

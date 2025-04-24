@@ -1,0 +1,23 @@
+package/modules {
+    dependencies: [
+        source/cronus
+        source/support
+        package/tartarus_header
+        package/freestanding_c_headers
+        tool/pkgconf
+        image/meson
+        image/nasm
+        image/clang
+    ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/elysium-kernel.cross-file \
+            --prefix=/sys \
+            --buildtype=debug \
+            -Dbuild_kernel=false \
+            -Dbuild_module=test \
+            $SOURCES_DIR/cronus
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}

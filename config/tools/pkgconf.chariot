@@ -1,0 +1,26 @@
+source/pkgconf {
+    url: "https://github.com/pkgconf/pkgconf/archive/refs/tags/pkgconf-2.4.3.tar.gz"
+    b2sum: "031ae702ff002198c6ea700a4f7f73cf82f19be3827a448929334ebae5f972b0d973e2c43bd12b4a8a8e6d0c187a006fa36d5303b36b2965e1046b26f50a51e7"
+    type: "tar.gz"
+    dependencies: [ tool/autoconf tool/automake tool/libtool ]
+    regenerate: <sh>libtoolize -cfvi && autoreconf -fvi</sh>
+}
+
+tool/pkgconf {
+    dependencies: [ source/pkgconf tool/autoconf tool/automake tool/libtool image/gcc-multilib ]
+    configure: <sh>$SOURCES_DIR/pkgconf/configure --prefix=$PREFIX</sh>
+    build: <sh>make -j$PARALLELISM</sh>
+    install: <sh>
+        DESTDIR=$INSTALL_DIR make install-strip
+        install -d $INSTALL_DIR$PREFIX/share/pkgconfig/personality.d
+
+        PERSONALITY_FILE="$INSTALL_DIR$PREFIX/share/pkgconfig/personality.d/x86_64-elysium.personality"
+        echo "Triplet: x86_64-elysium" >> $PERSONALITY_FILE
+        echo "SysrootDir: $SYSROOT_DIR" >> $PERSONALITY_FILE
+        echo "DefaultSearchPaths: $SYSROOT_DIR/usr/lib/pkgconfig:$SYSROOT_DIR/usr/share/pkgconfig" >> $PERSONALITY_FILE
+        echo "SystemIncludePaths: $SYSROOT_DIR/usr/include" >> $PERSONALITY_FILE
+        echo "SystemLibraryPaths: $SYSROOT_DIR/usr/lib" >> $PERSONALITY_FILE
+
+        ln -s pkgconf $INSTALL_DIR$PREFIX/bin/x86_64-elysium-pkg-config
+    </sh>
+}

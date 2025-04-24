@@ -1,0 +1,26 @@
+source/binutils {
+    url: "https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.gz"
+    b2sum: "f676664064380a9218bb031e68b3b8c7324ae8079d26f9940d5b411396f7dac3843e02b6ae483c57c2a13fda5ba95c30a33920e39866cc82cc39ad53c25aa0ec"
+    type: "tar.gz"
+    patch: "patches/binutils.diff"
+    dependencies: [ source/support source/libtool tool/pkgconf collection/autotools_2.69 ]
+    regenerate: <sh>
+        $SOURCES_DIR/support/reconfigure.sh -I"$(realpath ./config)"
+        cp -pv $SOURCES_DIR/libtool/build-aux/{config.sub,config.guess,install-sh} libiberty/
+    </sh>
+}
+
+tool/binutils {
+    dependencies: [ source/binutils image/build-essential tool/pkgconf collection/autotools_2.69 ]
+    configure: <sh>
+        $SOURCES_DIR/binutils/configure \
+            --with-sysroot=$SYSROOT_DIR \
+            --prefix=$PREFIX \
+            --target=x86_64-elysium \
+            --enable-targets=x86_64-elf,x86_64-pe \
+            --disable-nls \
+            --disable-werror
+    </sh>
+    build: <sh>PATH="$PATH:/usr/bin/core_perl" make -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR make install-strip</sh>
+}

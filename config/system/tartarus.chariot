@@ -1,0 +1,66 @@
+source/tartarus {
+    url: "https://github.com/elysium-os/tartarus-bootloader.git"
+    revision: "main"
+    type: "git"
+
+    dependencies: [ image/meson ]
+    regenerate: <sh>
+        meson subprojects download
+    </sh>
+}
+
+// source/vendor_nyu-efi {
+//     url: https://github.com/osdev0/nyu-efi/archive/eede601b8a9134cb4b6de96d2c430e2424c1390c.tar.gz
+//     b2sum: 26b841f4af5c0404a7a9976f7f42870ac3ef695e1c77da8f555feee93fe9f5be3cebd3d1f6cf2d5bef9ba198e41cfbc7883f2e23b4ec09b7165adf8c15b6b821
+//     type: tar.gz
+// }
+
+// TODO: provide cc-runtime for tartarus
+// TODO: provide freestanding headers for tartarus
+// TODO: provide nyu-efi for tartarus
+
+package/tartarus_header {
+    dependencies: [ source/tartarus ]
+    install: <sh>
+    	install -d "$INSTALL_DIR$PREFIX/share/tartarus/include"
+    	install $SOURCES_DIR/tartarus/tartarus.h "$INSTALL_DIR$PREFIX/share/tartarus/include"
+
+        mkdir -p "$INSTALL_DIR$PREFIX/lib/pkgconfig"
+        PKGCONF_FILE="$INSTALL_DIR$PREFIX/lib/pkgconfig/tartarus-bootloader.pc"
+        echo "prefix=$PREFIX" > $PKGCONF_FILE
+        echo "includedir=\${prefix}/share/tartarus/include" >> $PKGCONF_FILE
+        echo "" >> $PKGCONF_FILE
+        echo "Name: Tartarus Bootloader" >> $PKGCONF_FILE
+        echo "Description: Contains the tartarus bootloader header." >> $PKGCONF_FILE
+        echo "Version: undefined" >> $PKGCONF_FILE
+        echo "Cflags: -I\${includedir}" >> $PKGCONF_FILE
+    </sh>
+}
+
+package/tartarus {
+    dependencies: [ source/tartarus image/meson image/nasm image/clang image/lld image/llvm ]
+    configure: <sh>
+        CC=clang CC_LD=lld \
+        meson setup \
+            --prefix=$PREFIX \
+            --buildtype=debug \
+            -Dplatform=x86_64-bios \
+            $SOURCES_DIR/tartarus
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}
+
+package/tartarus_efi {
+    dependencies: [ source/tartarus image/meson image/nasm image/clang image/lld image/llvm ]
+    configure: <sh>
+        CC=clang CC_LD=lld \
+        meson setup \
+            --prefix=$PREFIX \
+            --buildtype=debug \
+            -Dplatform=x86_64-uefi \
+            $SOURCES_DIR/tartarus
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}

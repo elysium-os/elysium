@@ -1,0 +1,15 @@
+source/mkimg {
+    url: "https://github.com/elysium-os/mkimg"
+    revision: "3ee31fc7dd370fb68a9da52e271ef78a97de5012"
+    type: "git"
+}
+
+tool/mkimg {
+    dependencies: [ source/mkimg image/golang ]
+    configure: <sh>cp $SOURCES_DIR/mkimg/go.mod $SOURCES_DIR/mkimg/go.sum $SOURCES_DIR/mkimg/main.go .</sh>
+    build: <sh>go build</sh>
+    install: <sh>
+        install -d $INSTALL_DIR$PREFIX/bin
+        install mkimg $INSTALL_DIR$PREFIX/bin
+    </sh>
+}

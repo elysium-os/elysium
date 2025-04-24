@@ -1,0 +1,16 @@
+source/init {
+    url: "init"
+    type: "local"
+}
+
+package/init {
+    dependencies: [ source/init tool/gcc package/mlibc_headers ]
+    build: <sh>
+        cp -r $SOURCES_DIR/init/* .
+        make init
+    </sh>
+    install: <sh>
+        install -d $INSTALL_DIR$PREFIX/bin
+        install init $INSTALL_DIR$PREFIX/bin
+    </sh>
+}

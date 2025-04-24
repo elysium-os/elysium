@@ -1,0 +1,66 @@
+source/gcc_host {
+    url: "https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.gz"
+    b2sum: "7d429d2803b88d8cc9da460fd3a0bd0b888fbe0cc0338e7ed04c71599bd87b475836c8a8fb563338ee0f83e2b4d988427c063ae6c2bd0fc3ab30b07a4e9e7cd0"
+    type: "tar.gz"
+    patch: "patches/gcc-host.diff"
+    dependencies: [ source/support source/libtool tool/pkgconf collection/autotools_2.69 ]
+    regenerate: <sh>
+        ./contrib/download_prerequisites
+
+        rm -rf gettext*
+
+        $SOURCES_DIR/support/reconfigure.sh -I"$(realpath ./config)"
+
+        cp -pv $SOURCES_DIR/libtool/build-aux/{config.sub,config.guess,install-sh} libiberty/
+        cp -pv $SOURCES_DIR/libtool/build-aux/{config.sub,config.guess,install-sh} libgcc/
+    </sh>
+}
+
+tool/gcc_bootstrap {
+    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf collection/autotools_2.69 package/mlibc_headers image/build-essential ]
+    configure: <sh>
+        CFLAGS="-O2" CXXFLAGS="-O2" $SOURCES_DIR/gcc_host/configure \
+            --prefix=$PREFIX \
+            --target=x86_64-elysium \
+            --with-sysroot=$SYSROOT_DIR \
+            --enable-languages=c,c++ \
+            --disable-nls \
+            --disable-multilib \
+            --disable-shared \
+            --enable-initfini-array \
+            --without-headers \
+            --without-newlib
+    </sh>
+    build: <sh>
+        export PATH="$PATH:/usr/bin/core_perl"
+        make -j$PARALLELISM inhibit_libc=true all-gcc
+        make -j$PARALLELISM inhibit_libc=true all-target-libgcc
+    </sh>
+    install: <sh>
+        DESTDIR=$INSTALL_DIR make install-gcc
+        DESTDIR=$INSTALL_DIR make install-target-libgcc
+    </sh>
+}
+
+tool/gcc {
+    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf collection/autotools_2.69 *package/mlibc_headers *package/mlibc image/build-essential ]
+    configure: <sh>
+        CFLAGS="-O2" CXXFLAGS="-O2" $SOURCES_DIR/gcc_host/configure \
+            --prefix=$PREFIX \
+            --target=x86_64-elysium \
+            --with-sysroot=$SYSROOT_DIR \
+            --enable-languages=c,c++ \
+            --disable-nls \
+            --disable-multilib \
+            --enable-initfini-array
+    </sh>
+    build: <sh>
+        export PATH="$PATH:/usr/bin/core_perl"
+        make -j$PARALLELISM all-gcc
+        make -j$PARALLELISM all-target-libgcc
+    </sh>
+    install: <sh>
+        DESTDIR=$INSTALL_DIR make install-gcc
+        DESTDIR=$INSTALL_DIR make install-target-libgcc
+    </sh>
+}

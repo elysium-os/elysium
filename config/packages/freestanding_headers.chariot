@@ -1,0 +1,23 @@
+source/freestanding_c_headers {
+    url: "https://codeberg.org/osdev/freestnd-c-hdrs"
+    type: "git"
+    revision: "trunk"
+}
+
+source/freestanding_cxx_headers {
+    url: "https://codeberg.org/osdev/freestnd-cxx-hdrs"
+    type: "git"
+    revision: "trunk"
+}
+
+package/freestanding_c_headers {
+    dependencies: [ source/freestanding_c_headers ]
+    build: <sh>cp -rpf $SOURCES_DIR/freestanding_c_headers/* .</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR PREFIX=$PREFIX make install</sh>
+}
+
+package/freestanding_cxx_headers {
+    dependencies: [ source/freestanding_cxx_headers ]
+    build: <sh>cp -rpf $SOURCES_DIR/freestanding_cxx_headers/* .</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR PREFIX=$PREFIX make install</sh>
+}

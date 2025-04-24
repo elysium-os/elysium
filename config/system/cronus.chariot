@@ -1,0 +1,34 @@
+source/cronus {
+    url: "../cronus"
+    type: "local"
+    dependencies: [ image/meson ]
+    regenerate: <sh>
+        meson subprojects download cc-runtime
+        meson subprojects download uacpi
+    </sh>
+}
+
+package/cronus {
+    dependencies: [
+        source/cronus
+        source/support
+        package/tartarus_header
+        package/freestanding_c_headers
+        tool/pkgconf
+        image/meson
+        image/nasm
+        image/clang
+        image/lld
+        image/llvm
+    ]
+    options: [ "buildtype" ]
+    configure: <sh>
+        meson setup \
+            --cross-file $SOURCES_DIR/support/elysium-kernel.cross-file \
+            --prefix=$PREFIX \
+            --buildtype=$OPTION_buildtype \
+            $SOURCES_DIR/cronus
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+}

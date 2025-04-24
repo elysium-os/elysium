@@ -1,0 +1,64 @@
+@collection autotools_2.69 = [tool/autoconf_2.69 tool/automake tool/libtool]
+
+// Autoconf
+source/autoconf {
+    url: "https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz"
+    b2sum: "48fff54704176cbf2642230229c628b75c43ef3f810c39eea40cae91dd02e1203d04a544407de96f9172419a94b952865909d969d9e9b6c10879a9d9aeea5ad0"
+    type: "tar.gz"
+    patch: "patches/autoconf.diff"
+}
+
+source/autoconf_2.69 {
+    url: "https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz"
+    b2sum: "7e8a513bbfcabadad1577919c048cc05ca0a084788850b42570f88afc2fa9c25fb32277412f135b81ba1c0d8079465a6b581d2d78662c991d2183b739fac407c"
+    type: "tar.gz"
+}
+
+tool/autoconf {
+    dependencies: [ source/autoconf ]
+    configure: <sh>$SOURCES_DIR/autoconf/configure --prefix=$PREFIX</sh>
+    build: <sh>make -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR make install</sh>
+}
+
+tool/autoconf_2.69 {
+    dependencies: [ source/autoconf_2.69 ]
+    configure: <sh>$SOURCES_DIR/autoconf_2.69/configure --prefix=$PREFIX</sh>
+    build: <sh>make -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR make install</sh>
+}
+
+// Automake
+source/automake {
+    url: "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
+    b2sum: "5ccdcbe2d3deb2b0baed4a8590b07714cd7098fbda251afebe83232ed03f4db84abbe023cf0544622dbc5137254347273247428eb5420564a167b86de95d113e"
+    type: "tar.gz"
+    dependencies: [ source/autoconf ]
+    regenerate: <sh>
+        cp $SOURCES_DIR/autoconf/build-aux/config.guess ./lib
+        cp $SOURCES_DIR/autoconf/build-aux/config.sub ./lib
+    </sh>
+}
+
+tool/automake {
+    dependencies: [ source/automake tool/autoconf image/gcc ]
+    configure: <sh>$SOURCES_DIR/automake/configure --prefix=$PREFIX</sh>
+    build: <sh>make -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR make install-strip</sh>
+}
+
+// Libtool
+source/libtool {
+    url: "https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz"
+    b2sum: "47de3c49a690d44d7ddd5e3b5e4090c91dc5fbb9c40fc4a3963e150fb7329326ee3e21b8c149974726171c4b0380028e0efc7a369c4f04357eea46f69852e1cc"
+    type: "tar.xz"
+    dependencies: [ source/support tool/autoconf tool/automake ]
+    regenerate: <sh>LIBTOOLIZE=true $SOURCES_DIR/support/reconfigure.sh</sh>
+}
+
+tool/libtool {
+    dependencies: [ %source/libtool tool/autoconf tool/automake image/help2man image/build-essential ]
+    configure: <sh>$SOURCES_DIR/libtool/configure --prefix=$PREFIX</sh>
+    build: <sh>make -j$PARALLELISM</sh>
+    install: <sh>DESTDIR=$INSTALL_DIR make install-strip</sh>
+}
