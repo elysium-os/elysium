@@ -21,13 +21,16 @@ args = parser.parse_args()
 chariot_opts = ["--option", f"buildtype={args.buildtype}"]
 
 # Build cronus & image
-build_result = subprocess.run(["chariot", *chariot_opts, "build", "source/cronus"])
-build_result = subprocess.run(["chariot", *chariot_opts, "--verbose", "build", "package/cronus"])
-build_result = subprocess.run(["chariot", *chariot_opts, "build", "custom/image"])
+for cmd in [
+    ["chariot", *chariot_opts, "build", "source/cronus"],
+    ["chariot", *chariot_opts, "--verbose", "build", "package/cronus"],
+    ["chariot", *chariot_opts, "build", "custom/image"]
+]:
+    build_result = subprocess.run(cmd)
 
-if build_result.returncode != 0:
-    print("Build failed, not running qemu")
-    exit(1)
+    if build_result.returncode != 0:
+        print("Build failed, not running qemu")
+        exit(1)
 
 # Run QEMU
 image_path = os.path.join(chariot_utils.chariot_path("custom/image", chariot_opts), "elysium_efi.img" if args.efi else "elysium_bios.img")
