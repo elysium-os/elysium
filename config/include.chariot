@@ -11,3 +11,16 @@
 @import "tools/gcc.chariot"
 @import "tools/mkimg.chariot"
 @import "tools/pkgconf.chariot"
+
+tool/reconfigure {
+    install: <sh>
+        mkdir -p $INSTALL_DIR$PREFIX/bin
+        cat << EOF > $INSTALL_DIR$PREFIX/bin/reconfigure.sh
+        for f in \$(find . -name configure.ac -o -name configure.in -type f | sort); do
+            echo "* autotools regen in '\$(dirname \$f)'..."
+            ( cd "\$(dirname "\$f")" && autoreconf -fvi "\$@" )
+        done
+EOF
+        chmod +x $INSTALL_DIR$PREFIX/bin/reconfigure.sh
+    </sh>
+}

@@ -3,13 +3,13 @@ source/gcc_host {
     b2sum: "7d429d2803b88d8cc9da460fd3a0bd0b888fbe0cc0338e7ed04c71599bd87b475836c8a8fb563338ee0f83e2b4d988427c063ae6c2bd0fc3ab30b07a4e9e7cd0"
     type: "tar.gz"
     patch: "patches/gcc-host.diff"
-    dependencies: [ source/support source/libtool tool/pkgconf collection/autotools_2.69 ]
+    dependencies: [ source/libtool tool/reconfigure tool/pkgconf collection/autotools_2.69 ]
     regenerate: <sh>
         ./contrib/download_prerequisites
 
         rm -rf gettext*
 
-        $SOURCES_DIR/support/reconfigure.sh -I"$(realpath ./config)"
+        reconfigure.sh -I"$(realpath ./config)"
 
         cp -pv $SOURCES_DIR/libtool/build-aux/{config.sub,config.guess,install-sh} libiberty/
         cp -pv $SOURCES_DIR/libtool/build-aux/{config.sub,config.guess,install-sh} libgcc/
