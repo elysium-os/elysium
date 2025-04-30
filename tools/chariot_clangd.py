@@ -10,20 +10,12 @@ import tomllib
 project_path = dirname(dirname(abspath(__file__)))
 recipe_source_path = os.getcwd()
 
-config_path = None
-for dirpath, dirnames, filenames in os.walk(recipe_source_path):
-    for filename in filenames:
-        if filename == "chariot_clangd.toml":
-            config_path = os.path.join(dirpath, filename)
-
-if config_path == None:
-    print("no chariot_clangd.toml config found")
-    exit(1)
-
-config = tomllib.load(open(config_path, "rb"))
+if len(sys.argv) < 3:
+    print("Usage: chariot_clangd.py <package> <source name>")
+    sys.exit(1)
 
 mappings = [
-    f"{recipe_source_path}=$SOURCES_DIR/{config["source"]}"
+    f"{recipe_source_path}=$SOURCES_DIR/{sys.argv[2]}"
 ]
 
 result = subprocess.run([
@@ -31,7 +23,7 @@ result = subprocess.run([
     "--config", project_path + "/config.chariot",
     "--no-lockfile",
     "exec", "--rw",
-    "--recipe-context", config["recipe"],
+    "--recipe-context", sys.argv[1],
     "-p", "clangd",
     "-e", "HOME=/root/clangd",
     "-e", "XDG_CACHE_HOME=/root/clangd/cache",
