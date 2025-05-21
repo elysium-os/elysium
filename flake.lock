@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1746040016,
-        "narHash": "sha256-xFMzdTZ3gDeo7/LHqEcfpvz6kt08IVKQMUjpjTrrHPA=",
+        "lastModified": 1747677839,
+        "narHash": "sha256-VFy2/MBR6i2NXGG7xsGvOSqbRBXiIX+JPH1dvg8WLKI=",
         "owner": "elysium-os",
         "repo": "chariot",
-        "rev": "4087cd73f0e299c04d0b0e62dbc4789ada33acf3",
+        "rev": "4e0c554c6f36af22f19f7a8048b3bcab7030c3a7",
         "type": "github"
       },
       "original": {
@@ -59,16 +59,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1747335874,
-        "narHash": "sha256-IKKIXTSYJMmUtE+Kav5Rob8SgLPnfnq4Qu8LyT4gdqQ=",
+        "lastModified": 1747610100,
+        "narHash": "sha256-rpR5ZPMkWzcnCcYYo3lScqfuzEw5Uyfh+R0EKZfroAc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ba8b70ee098bc5654c459d6a95dfc498b91ff858",
+        "rev": "ca49c4304acf0973078db0a9d200fd2bae75676d",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-24.11",
+        "ref": "nixos-25.05",
         "repo": "nixpkgs",
         "type": "github"
       }
