@@ -1,34 +1,55 @@
 source/cronus {
     url: "../cronus"
     type: "local"
-    dependencies: [ image/meson ]
-    regenerate: <sh>
-        meson subprojects download cc-runtime
-        meson subprojects download uacpi
-    </sh>
 }
 
 package/cronus {
     dependencies: [
         source/cronus
-        source/support
-        package/tartarus_header
-        package/freestanding_c_headers
+
         tool/pkgconf
-        image/meson
+        tool/fabricate
+
         image/nasm
         image/clang
         image/lld
         image/llvm
+        image/ninja-build
     ]
-    options: [ "buildtype" ]
+    options: [ "buildtype", "arch" ]
     configure: <sh>
-        meson setup \
-            --cross-file $SOURCES_DIR/support/elysium-kernel.cross-file \
-            --prefix=$PREFIX \
-            --buildtype=$OPTION_buildtype \
-            $SOURCES_DIR/cronus
+        fabricate configure \
+            --builddir=$BUILD_DIR \
+            --config=$SOURCES_DIR/cronus/fab.lua \
+            --prefix=/sys \
+            --option=buildtype=$OPTION_buildtype \
+            --option=arch=$OPTION_arch
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
-    install: <sh>DESTDIR=$INSTALL_DIR ninja install</sh>
+    install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
+}
+
+package/modules {
+    dependencies: [
+        source/cronus
+
+        tool/fabricate
+
+        image/nasm
+        image/clang
+        image/ninja-build
+    ]
+    options: [ "buildtype", "arch" ]
+    configure: <sh>
+        fabricate configure \
+            --builddir=$BUILD_DIR \
+            --config=$SOURCES_DIR/cronus/fab.lua \
+            --prefix=/sys \
+            --option=buildtype=$OPTION_buildtype \
+            --option=arch=$OPTION_arch \
+            --option=build_kernel=no \
+            --option=build_modules="test"
+    </sh>
+    build: <sh>ninja -j$PARALLELISM</sh>
+    install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
 }

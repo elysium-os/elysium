@@ -2,6 +2,7 @@
 
 @env "CLICOLOR_FORCE" = "1"
 
+@option "arch" = [ "x86_64" ]
 @option "buildtype" = [ "debug", "release" ]
 
 // Support
@@ -42,7 +43,8 @@ tool/ksym {
 
 // Image
 custom/root {
-    dependencies: [ tool/rdsk package/mlibc_headers package/modules package/init ]
+    dependencies: [ tool/rdsk package/mlibc_headers package/cronus package/modules package/init ]
+    configure: <sh>rm -rf $BUILD_DIR/*</sh>
     build: <sh>
         mkdir ./root_directory
         cp -r $SYSROOT_DIR/* ./root_directory
@@ -64,6 +66,7 @@ custom/image {
         image/llvm
         image/qemu-utils
     ]
+    configure: <sh>rm -rf $BUILD_DIR/*</sh>
     build: <sh>
         cp $SYSROOT_DIR$PREFIX/share/tartarus/tartarus.sys .
         cp $SYSROOT_DIR$PREFIX/share/tartarus/x86_64-bios.bin .
@@ -71,8 +74,8 @@ custom/image {
         mkdir ./image_root
         cp $CUSTOM_DIR/root/root.rdk ./image_root
         cp $SOURCES_DIR/support/tartarus.cfg ./image_root
-        cp $SYSROOT_DIR$PREFIX/bin/kernel.elf ./image_root
-        llvm-nm -S $SYSROOT_DIR$PREFIX/bin/kernel.elf -n > ./kernel_symbols.txt
+        cp $SYSROOT_DIR/sys/kernel.elf ./image_root
+        llvm-nm -S $SYSROOT_DIR/sys/kernel.elf -n > ./kernel_symbols.txt
         ksym ./kernel_symbols.txt ./image_root/kernel.ksym
 
         mkimg --config=$SOURCES_DIR/support/mkimg_bios.toml

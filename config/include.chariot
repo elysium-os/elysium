@@ -3,11 +3,11 @@
 @import "packages/mlibc.chariot"
 
 @import "system/cronus.chariot"
-@import "system/modules.chariot"
 @import "system/tartarus.chariot"
 
 @import "tools/autotools.chariot"
 @import "tools/binutils.chariot"
+@import "tools/fabricate.chariot"
 @import "tools/gcc.chariot"
 @import "tools/mkimg.chariot"
 @import "tools/pkgconf.chariot"

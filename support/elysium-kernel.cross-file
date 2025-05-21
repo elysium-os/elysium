@@ -1,5 +1,0 @@
-[binaries]
-c = 'clang'
-ld = 'lld'
-pkg-config = 'x86_64-elysium-pkg-config'
-strip = 'llvm-strip'

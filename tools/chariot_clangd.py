@@ -5,7 +5,6 @@ import sys
 import os
 from os.path import dirname, abspath
 import subprocess
-import tomllib
 
 project_path = dirname(dirname(abspath(__file__)))
 recipe_source_path = os.getcwd()

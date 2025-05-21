@@ -1,0 +1,16 @@
+source/fabricate {
+    url: "https://github.com/elysium-os/fabricate.git"
+    revision: "fc31773bcc1c9df5f29c8f28a43bb8325d03cc23"
+    type: "git"
+}
+
+tool/fabricate {
+    dependencies: [ source/fabricate image/golang ]
+    build: <sh>
+        cd $SOURCES_DIR/fabricate
+        go build -o $BUILD_DIR/fabricate ./fabricate
+    </sh>
+    install: <sh>
+        install -D fabricate $INSTALL_DIR$PREFIX/bin/fabricate
+    </sh>
+}

@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from os.path import abspath, dirname
 import subprocess
 import sys
 
@@ -13,9 +14,14 @@ parser = argparse.ArgumentParser(prog="boot.py")
 parser.add_argument("--efi", action="store_true")
 parser.add_argument("-t", "--buildtype", default="debug", choices=["debug", "release"])
 parser.add_argument("--accel", default="kvm", choices=["kvm", "tcg"])
-parser.add_argument("--gdb", action="store_true")
+parser.add_argument("--debug", action="store_true")
 parser.add_argument("-d", "--display", default="default", choices=["default", "headless", "vnc"])
 parser.add_argument("-n", "--cores", type=int, default=4)
+
+parser.add_argument("--gdb", action="store_true")
+parser.add_argument("--tcg", action="store_const", const="tcg", dest="accel")
+parser.add_argument("--headless", action="store_const", const="headless", dest="display")
+
 args = parser.parse_args()
 
 chariot_opts = ["--option", f"buildtype={args.buildtype}"]
@@ -24,6 +30,7 @@ chariot_opts = ["--option", f"buildtype={args.buildtype}"]
 for cmd in [
     ["chariot", *chariot_opts, "build", "source/cronus"],
     ["chariot", *chariot_opts, "--verbose", "build", "package/cronus"],
+    ["chariot", *chariot_opts, "--verbose", "build", "package/modules"],
     ["chariot", *chariot_opts, "build", "custom/image"]
 ]:
     build_result = subprocess.run(cmd)
@@ -60,7 +67,7 @@ qemu_args.extend(["-d", "int"])
 qemu_args.extend(["-D", "./log.txt"])
 qemu_args.extend(["-monitor", "stdio"])
 qemu_args.extend(["-debugcon", "file:/dev/stdout"])
-if args.gdb:
+if args.debug or args.gdb:
     qemu_args.extend(["-s", "-S"])
 
 qemu_args.append("-no-reboot")
