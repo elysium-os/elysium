@@ -26,5 +26,6 @@ result = subprocess.run([
     "-p", "clangd",
     "-e", "HOME=/root/clangd",
     "-e", "XDG_CACHE_HOME=/root/clangd/cache",
+    "-m", recipe_source_path + "=" + "/chariot/sources/" + sys.argv[2] + ":ro",
     f"clangd --background-index --clang-tidy --header-insertion=never --path-mappings {",".join(mappings)}"
 ])
