@@ -1,7 +1,7 @@
-#include <stdint.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -129,15 +129,15 @@ int main(int argc, char **argv) {
 
     if(fwrite(
            &(header_t) { .identifier[0] = IDENTIFIER1,
-                              .identifier[1] = IDENTIFIER2,
-                              .identifier[2] = IDENTIFIER3,
-                              .identifier[3] = IDENTIFIER4,
-                              .revision = REVISION,
-                              .names_offset = sizeof(header_t),
-                              .names_size = names_size,
-                              .symbols_offset = sizeof(header_t) + names_size,
-                              .symbol_size = sizeof(symbol_t),
-                              .symbols_count = symbol_count },
+                         .identifier[1] = IDENTIFIER2,
+                         .identifier[2] = IDENTIFIER3,
+                         .identifier[3] = IDENTIFIER4,
+                         .revision = REVISION,
+                         .names_offset = sizeof(header_t),
+                         .names_size = names_size,
+                         .symbols_offset = sizeof(header_t) + names_size,
+                         .symbol_size = sizeof(symbol_t),
+                         .symbols_count = symbol_count },
            sizeof(header_t),
            1,
            out_file
