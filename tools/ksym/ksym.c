@@ -1,23 +1,27 @@
-#include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
-#define REVISION 1
+#define REVISION 2
 
 #define IDENTIFIER1 'K'
 #define IDENTIFIER2 'S'
 #define IDENTIFIER3 'y'
 #define IDENTIFIER4 'M'
 
+#define FLAG_GLOBAL (1 << 0)
+
 typedef struct {
-    uint64_t name_index;
+    uint64_t name_offset;
+    uint16_t flags;
+    uint16_t rsv0;
+    uint32_t rsv1;
     uint64_t size;
-    uint64_t value;
+    uint64_t address;
 } __attribute__((packed)) symbol_t;
 
 typedef struct {
@@ -29,8 +33,9 @@ typedef struct {
 } __attribute__((packed)) header_t;
 
 int main(int argc, char **argv) {
+    // Validate arguments
     if(argc < 2) {
-        fprintf(stderr, "missing symbols file");
+        fprintf(stderr, "missing input file");
         return EXIT_FAILURE;
     }
 
@@ -42,88 +47,48 @@ int main(int argc, char **argv) {
     bool verbose = false;
     if(argc >= 4 && strcmp(argv[3], "verbose") == 0) verbose = true;
 
-    FILE *symbols_file = fopen(argv[1], "r");
-    if(symbols_file == NULL) {
-        fprintf(stderr, "failed to open symbols file `%s`", strerror(errno));
+    // Allocate buffers
+    symbol_t *symbol_buffer = NULL;
+    size_t symbol_buffer_count = 0;
+
+    char *name_buffer = NULL;
+    size_t name_buffer_size = 0;
+
+    // Process input file
+    FILE *input = fopen(argv[1], "r");
+    if(input == NULL) {
+        fprintf(stderr, "failed to open input `%s`", strerror(errno));
         return EXIT_FAILURE;
     }
 
-    int symbols_fd = fileno(symbols_file);
-    if(symbols_fd < 0) {
-        fprintf(stderr, "failed to get symbols fd `%s`", strerror(errno));
-        return EXIT_FAILURE;
+    uint64_t address, size;
+    char type;
+    char name[2048];
+    while(fscanf(input, "%lx %lx %c %s", &address, &size, &type, name) == 4) {
+        bool global = type >= 'A' && type <= 'Z';
+        uint64_t flags = (uint64_t) type << 8;
+        if(global) type |= FLAG_GLOBAL;
+
+        if(verbose) printf("%#lx | %#lx | %c '%c' | %s\n", address, size, global ? 'G' : '-', type, name);
+
+        symbol_buffer = reallocarray(symbol_buffer, ++symbol_buffer_count, sizeof(symbol_t));
+        symbol_buffer[symbol_buffer_count - 1] = (symbol_t) { .address = address, .size = size, .name_offset = name_buffer_size, .flags = flags };
+
+        size_t name_len = strlen(name) + 1;
+        name_buffer = realloc(name_buffer, name_buffer_size + name_len);
+        memcpy(&name_buffer[name_buffer_size], name, name_len);
+        name_buffer_size += name_len;
     }
 
-    struct stat stat;
-    if(fstat(symbols_fd, &stat) != 0) {
-        fprintf(stderr, "failed to stat symbols file `%s`", strerror(errno));
-        return EXIT_FAILURE;
-    }
+    fclose(input);
 
-    char *names = NULL;
-    size_t names_size = 0;
+    uint64_t padding = name_buffer_size % sizeof(uint64_t);
+    if(padding != 0) padding = sizeof(uint64_t) - padding;
 
-    symbol_t *symbols = NULL;
-    size_t symbol_count = 0;
-
-    char *symbols_data = malloc(stat.st_size);
-    if(fread(symbols_data, 1, stat.st_size, symbols_file) != stat.st_size) {
-        fprintf(stderr, "failed to read symbols file `%s`", strerror(errno));
-        return EXIT_FAILURE;
-    }
-
-    for(size_t i = 0; i < stat.st_size;) {
-        assert(stat.st_size - i >= 36);
-
-        // parse address
-        char address_str[17] = {};
-        memcpy(&address_str, &symbols_data[i], 16);
-        uintptr_t value = strtoull(address_str, NULL, 16);
-
-        i += 16;
-
-        i += 1; // space
-
-        // parse size
-        char size_str[17] = {};
-        memcpy(&size_str, &symbols_data[i], 16);
-        uintptr_t size = strtoull(address_str, NULL, 16);
-
-        i += 16;
-
-        i += 1; // space
-
-        // parse type
-        i += 1;
-
-        i += 1; // space
-
-        // parse & write name
-        size_t name_length = 0;
-        for(size_t j = i; j < stat.st_size && symbols_data[j] != '\n'; j++) name_length++;
-
-        size_t name_index = names_size;
-        names_size += name_length + 1;
-        names = realloc(names, names_size);
-        memcpy(&names[name_index], &symbols_data[i], name_length);
-        names[name_index + name_length] = '\0';
-
-        i += name_length + 1;
-
-        // write symbol
-        symbols = realloc(symbols, sizeof(symbol_t) * (symbol_count + 1));
-        symbols[symbol_count] = (symbol_t) { .name_index = name_index, .size = size, .value = value };
-        symbol_count += 1;
-
-        // print symbol
-        if(verbose) printf("%#lx | %#lx | %s\n", value, size, &names[name_index]);
-    }
-
-    fclose(symbols_file);
-
-    FILE *out_file = fopen(argv[2], "w");
-    if(out_file == NULL) {
-        fprintf(stderr, "failed to open symbols file `%s`", strerror(errno));
+    // Flush to output file
+    FILE *output = fopen(argv[2], "w");
+    if(output == NULL) {
+        fprintf(stderr, "failed to output file `%s`", strerror(errno));
         return EXIT_FAILURE;
     }
 
@@ -134,34 +99,40 @@ int main(int argc, char **argv) {
                          .identifier[3] = IDENTIFIER4,
                          .revision = REVISION,
                          .names_offset = sizeof(header_t),
-                         .names_size = names_size,
-                         .symbols_offset = sizeof(header_t) + names_size,
+                         .names_size = name_buffer_size,
+                         .symbols_offset = sizeof(header_t) + name_buffer_size + padding,
                          .symbol_size = sizeof(symbol_t),
-                         .symbols_count = symbol_count },
+                         .symbols_count = symbol_buffer_count },
            sizeof(header_t),
            1,
-           out_file
+           output
        ) != 1)
     {
         fprintf(stderr, "failed to write header to output `%s`", strerror(errno));
         return EXIT_FAILURE;
     }
 
-    if(fwrite(names, 1, names_size, out_file) != names_size) {
-        fprintf(stderr, "failed to names to output `%s`", strerror(errno));
+    if(fwrite(name_buffer, 1, name_buffer_size, output) != name_buffer_size) {
+        fprintf(stderr, "failed to flush name buffer to output file `%s`", strerror(errno));
         return EXIT_FAILURE;
     }
 
-    if(fwrite(symbols, sizeof(symbol_t), symbol_count, out_file) != symbol_count) {
-        fprintf(stderr, "failed to symbols to output `%s`", strerror(errno));
+    uint8_t zero = 0;
+    if(fwrite(&zero, 1, padding, output) != padding) {
+        fprintf(stderr, "failed to pad output file `%s`", strerror(errno));
         return EXIT_FAILURE;
     }
 
-    fclose(out_file);
+    if(fwrite(symbol_buffer, sizeof(symbol_t), symbol_buffer_count, output) != symbol_buffer_count) {
+        fprintf(stderr, "failed to flush symbols to output file `%s`", strerror(errno));
+        return EXIT_FAILURE;
+    }
 
-    if(names != NULL) free(names);
-    if(symbols != NULL) free(symbols);
-    free(symbols_data);
+    fclose(output);
+
+    // Free buffers
+    if(name_buffer != NULL) free(name_buffer);
+    if(symbol_buffer != NULL) free(symbol_buffer);
 
     return 0;
 }
