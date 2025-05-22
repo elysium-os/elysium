@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     while(fscanf(input, "%lx %lx %c %s", &address, &size, &type, name) == 4) {
         bool global = type >= 'A' && type <= 'Z';
         uint64_t flags = (uint64_t) type << 8;
-        if(global) type |= FLAG_GLOBAL;
+        if(global) flags |= FLAG_GLOBAL;
 
         if(verbose) printf("%#lx | %#lx | %c '%c' | %s\n", address, size, global ? 'G' : '-', type, name);
 
