@@ -20,6 +20,8 @@
 
                 python3 # Used heavily by tools
 
+                llvmPackages_20.clang-tools # clang-format & clang-tidy
+
                 gdb
                 bochs
                 qemu_full
