@@ -15,6 +15,6 @@ address = int(sys.argv[1], 16)
 
 subprocess.run([
     "addr2line", "-fai",
-    "-e", os.path.join(chariot_utils.chariot_path("package/cronus"), "usr/bin/kernel.elf"),
+    "-e", os.path.join(chariot_utils.path("package/cronus"), "sys/kernel.elf"),
     hex(address)
 ])

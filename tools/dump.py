@@ -15,7 +15,7 @@ start_address = int(sys.argv[1], 16)
 end_address = start_address + 128
 
 subprocess.run([
-    "objdump", os.path.join(chariot_utils.chariot_path("package/cronus"), "usr/bin/kernel.elf"),
+    "objdump", os.path.join(chariot_utils.path("package/cronus"), "sys/kernel.elf"),
     "-d", "-wrC",
     "--visualize-jumps=color",
     "--disassembler-color=on",
