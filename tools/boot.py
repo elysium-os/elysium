@@ -26,27 +26,26 @@ args = parser.parse_args()
 chariot_opts = ["--option", f"buildtype={args.buildtype}"]
 
 # Build cronus & image
-chariot_cmd = ["chariot", "build"]
-chariot_cmd.extend([
+recipes = [
     "source/cronus",
     "package/cronus",
     "package/modules",
     "custom/image",
-])
+]
 
-if subprocess.run(chariot_cmd).returncode != 0:
+if chariot_utils.build(recipes).returncode != 0:
     print("Build failed, not running qemu")
     exit(1)
 
 # Run QEMU
-image_path = os.path.join(chariot_utils.chariot_path("custom/image", chariot_opts), "elysium_efi.img" if args.efi else "elysium_bios.img")
+image_path = os.path.join(chariot_utils.path("custom/image", chariot_opts), "elysium_efi.img" if args.efi else "elysium_bios.img")
 
 qemu_args = ["qemu-ovmf-x86-64" if args.efi else "qemu-system-x86_64"]
 qemu_args.extend(["-drive", f"format=raw,file={image_path}"])
 
 qemu_args.extend(["-m", "512M"])
 qemu_args.extend(["-machine", "q35"])
-qemu_args.extend(["-cpu", "qemu64,pdpe1gb"])
+qemu_args.extend(["-cpu", "qemu64,+pdpe1gb,+invtsc,+pcid"])
 qemu_args.extend(["-vga", "virtio"])
 qemu_args.extend(["-smp", f"cores={args.cores}"])
 qemu_args.extend(["-net", "none"])
@@ -62,7 +61,7 @@ qemu_args.extend(["-accel", args.accel])
 qemu_args.extend(["-M", "smm=off"])
 qemu_args.extend(["-k", "en-us"])
 
-qemu_args.extend(["-d", "int"])
+qemu_args.extend(["-d", "int,fpu,guest_errors"])
 qemu_args.extend(["-D", "./log.txt"])
 qemu_args.extend(["-monitor", "stdio"])
 qemu_args.extend(["-debugcon", "file:/dev/stdout"])
