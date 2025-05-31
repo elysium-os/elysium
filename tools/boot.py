@@ -33,7 +33,7 @@ recipes = [
     "custom/image",
 ]
 
-if chariot_utils.build(recipes).returncode != 0:
+if chariot_utils.build(recipes, chariot_opts).returncode != 0:
     print("Build failed, not running qemu")
     exit(1)
 
