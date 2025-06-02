@@ -28,6 +28,21 @@ tool/autoconf_2.69 {
     install: <sh>DESTDIR=$INSTALL_DIR make install</sh>
 }
 
+// Autoconf Archive
+source/autoconf_archive {
+    url: "https://ftp.gnu.org/gnu/autoconf-archive/autoconf-archive-2024.10.16.tar.xz"
+    b2sum: "64554b7258c527f2e6bb115bec08e358bd4f10b940cdbe58c073fb3bdeccab78897250766e600b7e5fd79a76d633135d1caf2c7e81893bd68cab704073cac2c5"
+    type: "tar.xz"
+}
+
+tool/autoconf_archive {
+    dependencies: [ source/autoconf_archive ]
+    install: <sh>
+        mkdir -p $INSTALL_DIR$PREFIX/share/aclocal
+        cp -r $SOURCES_DIR/autoconf_archive/m4/. $INSTALL_DIR$PREFIX/share/aclocal/
+    </sh>
+}
+
 // Automake
 source/automake {
     url: "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"

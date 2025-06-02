@@ -17,7 +17,7 @@ source/gcc_host {
 }
 
 tool/gcc_bootstrap {
-    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf collection/autotools_2.69 package/mlibc_headers image/build-essential ]
+    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf tool/autoconf_archive collection/autotools_2.69 package/mlibc_headers image/build-essential ]
     configure: <sh>
         CFLAGS="-O2" CXXFLAGS="-O2" $SOURCES_DIR/gcc_host/configure \
             --prefix=$PREFIX \
@@ -43,7 +43,7 @@ tool/gcc_bootstrap {
 }
 
 tool/gcc {
-    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf collection/autotools_2.69 *package/mlibc_headers *package/mlibc image/build-essential ]
+    dependencies: [ %source/gcc_host *tool/binutils tool/pkgconf tool/autoconf_archive collection/autotools_2.69 *package/mlibc_headers *package/mlibc image/build-essential ]
     configure: <sh>
         CFLAGS="-O2" CXXFLAGS="-O2" $SOURCES_DIR/gcc_host/configure \
             --prefix=$PREFIX \
