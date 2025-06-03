@@ -48,7 +48,7 @@ package/modules {
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch \
             --option=build_kernel=no \
-            --option=build_modules="test"
+            --option=build_modules="test_pmm test_vm"
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
     install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
