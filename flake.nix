@@ -5,8 +5,6 @@
 
         chariot.url = "github:elysium-os/chariot";
         chariot.inputs.nixpkgs.follows = "nixpkgs";
-
-        zed.url = "github:zed-industries/zed/main";
     };
 
     outputs = { nixpkgs, flake-utils, ... } @ inputs: flake-utils.lib.eachDefaultSystem (system:
@@ -32,17 +30,9 @@
                 '')
             ];
         in {
-            devShells = {
-                default = pkgs.mkShell {
-                    shellHook = "export NIX_SHELL_NAME='elysium-os'";
-                    nativeBuildInputs = commonPackages;
-                };
-                zed = pkgs.mkShell {
-                    shellHook = "export NIX_SHELL_NAME='elysium-os/zed'";
-                    nativeBuildInputs = commonPackages ++ [
-                        inputs.zed.packages.${system}.default
-                    ];
-                };
+            devShells.default = pkgs.mkShell {
+                shellHook = "export NIX_SHELL_NAME='elysium-os'";
+                nativeBuildInputs = commonPackages;
             };
         }
     );
