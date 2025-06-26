@@ -1,6 +1,7 @@
 source/cronus {
-    url: "../cronus"
-    type: "local"
+    url: "https://github.com/elysium-os/cronus.git"
+    revision: "main"
+    type: "git"
 }
 
 package/cronus {
