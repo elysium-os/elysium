@@ -1,4 +1,4 @@
-@import "config/include.chariot"
+@import "config/**/*.chariot"
 
 @env "CLICOLOR_FORCE" = "1"
 
@@ -9,6 +9,20 @@
 source/support {
     url: "support"
     type: "local"
+}
+
+// Reconfigure script
+tool/reconfigure {
+    install: <sh>
+        mkdir -p $INSTALL_DIR$PREFIX/bin
+        cat << EOF > $INSTALL_DIR$PREFIX/bin/reconfigure.sh
+        for f in \$(find . -name configure.ac -o -name configure.in -type f | sort); do
+            echo "* autotools regen in '\$(dirname \$f)'..."
+            ( cd "\$(dirname "\$f")" && autoreconf -fvi "\$@" )
+        done
+EOF
+        chmod +x $INSTALL_DIR$PREFIX/bin/reconfigure.sh
+    </sh>
 }
 
 // RDSK
