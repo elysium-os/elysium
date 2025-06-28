@@ -58,7 +58,7 @@ tool/ksym {
 // Image
 custom/root {
     dependencies: [ tool/rdsk package/mlibc_headers package/cronus package/modules package/init ]
-    configure: <sh>rm -rf $BUILD_DIR/*</sh>
+    always_clean: "yes"
     build: <sh>
         mkdir ./root_directory
         cp -r $SYSROOT_DIR/* ./root_directory
@@ -80,7 +80,7 @@ custom/image {
         image/llvm
         image/qemu-utils
     ]
-    configure: <sh>rm -rf $BUILD_DIR/*</sh>
+    always_clean: "yes"
     build: <sh>
         cp $SYSROOT_DIR$PREFIX/share/tartarus/tartarus.sys .
         cp $SYSROOT_DIR$PREFIX/share/tartarus/x86_64-bios.bin .
