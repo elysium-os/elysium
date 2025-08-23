@@ -34,7 +34,7 @@ package/linux_headers {
     </sh>
 }
 
-//MLibc
+// MLibc
 source/mlibc-sysdeps {
     url: "mlibc-sysdeps"
     type: "local"

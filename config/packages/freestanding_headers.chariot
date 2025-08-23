@@ -1,13 +1,13 @@
 source/freestanding_c_headers {
-    url: "https://codeberg.org/osdev/freestnd-c-hdrs"
+    url: "https://github.com/osdev0/freestnd-c-hdrs.git"
     type: "git"
-    revision: "trunk"
+    revision: "4039f438fb1dc1064d8e98f70e1cf122f91b763b"
 }
 
 source/freestanding_cxx_headers {
-    url: "https://codeberg.org/osdev/freestnd-cxx-hdrs"
+    url: "https://github.com/osdev0/freestnd-cxx-hdrs.git"
     type: "git"
-    revision: "trunk"
+    revision: "85096df5361a4d7ef2ce46947e555ec248c2858e"
 }
 
 package/freestanding_c_headers {

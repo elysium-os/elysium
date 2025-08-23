@@ -5,12 +5,14 @@ source/tartarus {
 }
 
 package/tartarus {
-    dependencies: [ source/tartarus tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
+    dependencies: [ source/tartarus source/freestanding_c_headers source/cc_runtime tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
     configure: <sh>
         fabricate configure \
             --builddir=$BUILD_DIR \
             --config=$SOURCES_DIR/tartarus/fab.lua \
             --prefix=$PREFIX \
+            --depdir=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
+            --depdir=cc-runtime=$SOURCES_DIR/cc_runtime \
             --option=buildtype=development \
             --option=platform=x86_64-bios
     </sh>
@@ -19,12 +21,15 @@ package/tartarus {
 }
 
 package/tartarus_efi {
-    dependencies: [ source/tartarus tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
+    dependencies: [ source/tartarus source/freestanding_c_headers source/cc_runtime source/pico_efi tool/fabricate image/nasm image/clang image/lld image/llvm image/ninja-build ]
     configure: <sh>
         fabricate configure \
             --builddir=$BUILD_DIR \
             --config=$SOURCES_DIR/tartarus/fab.lua \
             --prefix=$PREFIX \
+            --depdir=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
+            --depdir=cc-runtime=$SOURCES_DIR/cc_runtime \
+            --depdir=pico-efi=$SOURCES_DIR/pico_efi \
             --option=buildtype=development \
             --option=platform=x86_64-uefi
     </sh>

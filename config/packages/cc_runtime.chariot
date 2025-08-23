@@ -1,0 +1,5 @@
+source/cc_runtime {
+    url: "https://github.com/osdev0/cc-runtime.git"
+    revision: "dae79833b57a01b9fd3e359ee31def69f5ae899b"
+    type: "git"
+}
