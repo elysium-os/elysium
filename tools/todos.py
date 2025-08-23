@@ -26,7 +26,7 @@ def find_tags(tag, color):
                         for i, line in enumerate(f):
                             match = re.search(f"(\\/\\/|\\*|@|;) *{tag}:? *(.*)", line)
                             if match != None:
-                                tags.append({ "tag": tag, "color": color, "path": fullpath.split("kernel/")[1], "line": i, "value": match.group(2) })
+                                tags.append({ "tag": tag, "color": color, "path": fullpath.split("source/cronus/src/")[1], "line": i, "value": match.group(2) })
                                 break
     return tags
 
