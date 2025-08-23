@@ -1,0 +1,13 @@
+source/ksym {
+    url: "tools/ksym"
+    type: "local"
+}
+
+tool/ksym {
+    dependencies: [ source/ksym image/clang ]
+    build: <sh>clang $SOURCES_DIR/ksym/ksym.c -o ksym</sh>
+    install: <sh>
+        install -d $INSTALL_DIR$PREFIX/bin
+        install ksym $INSTALL_DIR$PREFIX/bin
+    </sh>
+}

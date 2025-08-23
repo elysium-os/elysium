@@ -1,0 +1,13 @@
+source/rdsk {
+    url: "tools/rdsk"
+    type: "local"
+}
+
+tool/rdsk {
+    dependencies: [ source/rdsk image/clang ]
+    build: <sh>clang $SOURCES_DIR/rdsk/rdsk.c -o rdsk</sh>
+    install: <sh>
+        install -d $INSTALL_DIR$PREFIX/bin
+        install rdsk $INSTALL_DIR$PREFIX/bin
+    </sh>
+}
