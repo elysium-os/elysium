@@ -43,6 +43,11 @@ package/modules {
     dependencies: [
         source/cronus
 
+        source/freestanding_c_headers
+        source/cc_runtime
+        source/tartarus
+        source/uacpi
+
         tool/fabricate
 
         image/nasm
@@ -55,6 +60,10 @@ package/modules {
             --builddir=$BUILD_DIR \
             --config=$SOURCES_DIR/cronus/fab.lua \
             --prefix=/sys \
+            --depdir=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
+            --depdir=cc-runtime=$SOURCES_DIR/cc_runtime \
+            --depdir=tartarus=$SOURCES_DIR/tartarus \
+            --depdir=uacpi=$SOURCES_DIR/uacpi \
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch \
             --option=build_kernel=no \
