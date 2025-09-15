@@ -24,21 +24,22 @@ custom/image {
     ]
     always_clean: "yes"
     build: <sh>
-        cp $SYSROOT_DIR$PREFIX/share/tartarus/tartarus.sys .
-        cp $SYSROOT_DIR$PREFIX/share/tartarus/x86_64-bios.bin .
-
-        mkdir ./image_root
-        cp $CUSTOM_DIR/root/root.rdk ./image_root
-        cp $SOURCES_DIR/support/tartarus.cfg ./image_root
-        cp $SYSROOT_DIR/sys/kernel.elf ./image_root
         llvm-nm -S $SYSROOT_DIR/sys/kernel.elf -n > ./kernel_symbols.txt
-        ksym ./kernel_symbols.txt ./image_root/kernel.ksym
+        ksym ./kernel_symbols.txt ./kernel.ksym
 
-        mkimg --config=$SOURCES_DIR/support/mkimg_bios.toml
+        ROOT_FILES=${SYSROOT_DIR}/sys/kernel.elf#${CUSTOM_DIR}/root/root.rdk#${SOURCES_DIR}/support/tartarus.cfg#./kernel.ksym
 
-        mkdir -p ./image_root/EFI/BOOT
-        cp $SYSROOT_DIR$PREFIX/share/tartarus/tartarus.efi ./image_root/EFI/BOOT/BOOTX64.EFI
-        mkimg --config=$SOURCES_DIR/support/mkimg_efi.toml
+        mkimg \
+            --protective-mbr \
+            --dest elysium_bios.img \
+            --bootsector ${SYSROOT_DIR}${PREFIX}/share/tartarus/x86_64-bios.bin \
+            --partition type=file:name=Tartarus:gpt-type=54524154-5241-5355-424F-4F5450415254:file=${SYSROOT_DIR}${PREFIX}/share/tartarus/tartarus.sys \
+            --partition type=fs:gpt-type=454C5953-4955-4D52-4F4F-545041525458:fs-type=fat32:fs-size=64:fs-files=${ROOT_FILES}
+
+        mkimg \
+            --protective-mbr \
+            --dest elysium_efi.img \
+            --partition type=fs:name=ESP:gpt-type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B:fs-type=fat32:fs-size=128:fs-files=${ROOT_FILES}#${SYSROOT_DIR}${PREFIX}/share/tartarus/tartarus.efi@/EFI/BOOT/BOOTX64.EFI
 
         qemu-img convert -O vmdk elysium_efi.img elysium_efi.vmdk
         qemu-img convert -O vmdk elysium_bios.img elysium_bios.vmdk

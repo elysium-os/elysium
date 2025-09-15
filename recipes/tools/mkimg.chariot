@@ -1,6 +1,6 @@
 source/mkimg {
-    url: "https://github.com/elysium-os/mkimg"
-    revision: "3ee31fc7dd370fb68a9da52e271ef78a97de5012"
+    url: "https://github.com/elysium-os/mkimg.git"
+    revision: "ef9aace290a4c21bba10be324059031ff6136d70"
     type: "git"
 }
 
