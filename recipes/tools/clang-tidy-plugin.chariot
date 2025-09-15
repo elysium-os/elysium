@@ -1,0 +1,28 @@
+source/clang-tidy-plugin {
+    url: "https://github.com/elysium-os/clang-tidy-plugin"
+    type: "git"
+    revision: "main"
+}
+
+tool/clang-tidy-plugin {
+    dependencies: [
+        source/clang-tidy-plugin
+
+        image/libclang-dev
+        image/llvm-dev
+
+        image/clang
+        image/lld
+        image/cmake
+        image/ninja-build
+    ]
+    configure: <sh>
+        cmake -S $SOURCES_DIR/clang-tidy-plugin -G Ninja
+    </sh>
+    build: <sh>
+        ninja
+    </sh>
+    install: <sh>
+        DESTDIR=$INSTALL_DIR cmake --install . --prefix $PREFIX
+    </sh>
+}

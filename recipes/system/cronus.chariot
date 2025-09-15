@@ -16,8 +16,11 @@ package/cronus {
         tool/pkgconf
         tool/fabricate
 
+        tool/clang-tidy-plugin
+
         image/nasm
         image/clang
+        image/clang-tidy
         image/lld
         image/llvm
         image/ninja-build
@@ -34,6 +37,11 @@ package/cronus {
             --depdir=uacpi=$SOURCES_DIR/uacpi \
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch
+
+            run-clang-tidy \
+                -source-filter "^.*\/cronus\\/.*\\.c\$" \
+                -load /usr/local/lib/clang-tidy-plugins/libelysium-tidy.so \
+                -config-file $SOURCES_DIR/cronus/.clang-tidy
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
     install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
