@@ -1,5 +1,5 @@
 source/pico_efi {
-    url: "https://github.com/PicoEFI/PicoEFI.git"
-    revision: "2690f9a67db1ad05315c044d7ba51d72b6a6ccc3"
+    url: "https://codeberg.org/PicoEFI/PicoEFI.git"
+    revision: "4bd08c13f103de9efd7b215a3e337447f1e2ce37"
     type: "git"
 }
