@@ -8,11 +8,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1758651467,
-        "narHash": "sha256-YJ4bwW4GHREbp9MvSDhZgSiL6muAMbDEj8298hcaCeE=",
+        "lastModified": 1758651656,
+        "narHash": "sha256-ez7zT2iLRjlT7jp/0Nh07mURZmcWvMhFpNqpZxp9izk=",
         "owner": "elysium-os",
         "repo": "chariot",
-        "rev": "00f9380a5d22c86f8addb91806ac7d0c9b1c613e",
+        "rev": "076a29b9f869cc2035abfcb5a7d7300b61cabfe7",
         "type": "github"
       },
       "original": {
