@@ -39,6 +39,7 @@ tags += find_tags("CRITICAL", 31)
 tags += find_tags("FIX", 91)
 tags += find_tags("TEMPORARY", 32)
 tags += find_tags("NOTE", 37)
+tags += find_tags("FLIMSY", 90)
 
 for tag in tags:
     print(f"\033[{tag["color"]}m[{tag["tag"]}] {tag["path"]}:{tag["line"]}\033[0m {tag["value"]}")
