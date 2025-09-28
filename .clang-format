@@ -110,7 +110,7 @@ Cpp11BracedListStyle: false
 SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^"arch/x86_64/.*'
+  - Regex: '^"x86_64/.*'
     Priority: 2
   - Regex: '^".*'
     Priority: 1
