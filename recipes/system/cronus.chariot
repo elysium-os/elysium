@@ -41,7 +41,8 @@ package/cronus {
             run-clang-tidy \
                 -source-filter "^.*\/cronus\\/.*\\.c\$" \
                 -load /usr/local/lib/clang-tidy-plugins/libelysium-tidy.so \
-                -config-file $SOURCES_DIR/cronus/.clang-tidy
+                -config-file $SOURCES_DIR/cronus/.clang-tidy \
+                -use-color
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
     install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
