@@ -13,7 +13,7 @@ if chariot_utils.build(["source/cronus"]).returncode != 0:
     exit(1)
 
 source_dir = chariot_utils.path("source/cronus")
-source_dirs = [os.path.join(source_dir, "kernel/"), os.path.join(source_dir, "modules/")]
+source_dirs = [source_dir]
 
 def find_tags(tag, color):
     tags = []
