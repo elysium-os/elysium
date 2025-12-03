@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -B
 
 import os
-import sys
 import re
-import subprocess
 
-sys.dont_write_bytecode = True
 import chariot_utils
 
 if chariot_utils.build(["source/cronus"]).returncode != 0:
@@ -14,6 +11,7 @@ if chariot_utils.build(["source/cronus"]).returncode != 0:
 
 source_dir = chariot_utils.path("source/cronus")
 source_dirs = [source_dir]
+
 
 def find_tags(tag, color):
     tags = []
@@ -26,9 +24,18 @@ def find_tags(tag, color):
                         for i, line in enumerate(f):
                             match = re.search(f"(\\/\\/|\\*|@|;) *{tag}:? *(.*)", line)
                             if match != None:
-                                tags.append({ "tag": tag, "color": color, "path": fullpath.split("source/cronus/src/")[1], "line": i, "value": match.group(2) })
+                                tags.append(
+                                    {
+                                        "tag": tag,
+                                        "color": color,
+                                        "path": fullpath.split("source/cronus/src/")[1],
+                                        "line": i,
+                                        "value": match.group(2),
+                                    }
+                                )
                                 break
     return tags
+
 
 tags = []
 tags += find_tags("TODO", 33)
@@ -42,4 +49,6 @@ tags += find_tags("NOTE", 37)
 tags += find_tags("FLIMSY", 90)
 
 for tag in tags:
-    print(f"\033[{tag["color"]}m[{tag["tag"]}] {tag["path"]}:{tag["line"]}\033[0m {tag["value"]}")
+    print(
+        f"\033[{tag['color']}m[{tag['tag']}] {tag['path']}:{tag['line']}\033[0m {tag['value']}"
+    )

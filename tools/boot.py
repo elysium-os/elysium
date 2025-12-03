@@ -1,12 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S python3 -B
 
 import argparse
 import os
-from os.path import abspath, dirname
 import subprocess
-import sys
 
-sys.dont_write_bytecode = True
 import chariot_utils
 
 # Parse CLI
@@ -15,11 +12,15 @@ parser.add_argument("--efi", action="store_true")
 parser.add_argument("-t", "--buildtype", default="debug", choices=["debug", "release"])
 parser.add_argument("--accel", default="kvm", choices=["kvm", "tcg"])
 parser.add_argument("--debug", action="store_true")
-parser.add_argument("-d", "--display", default="default", choices=["default", "headless", "vnc"])
+parser.add_argument(
+    "-d", "--display", default="default", choices=["default", "headless", "vnc"]
+)
 parser.add_argument("-n", "--cores", type=int, default=4)
 parser.add_argument("--gdb", action="store_true")
 parser.add_argument("--tcg", action="store_const", const="tcg", dest="accel")
-parser.add_argument("--headless", action="store_const", const="headless", dest="display")
+parser.add_argument(
+    "--headless", action="store_const", const="headless", dest="display"
+)
 
 args = parser.parse_args()
 
@@ -38,7 +39,10 @@ if chariot_utils.build(recipes, chariot_opts).returncode != 0:
     exit(1)
 
 # Run QEMU
-image_path = os.path.join(chariot_utils.path("custom/image", chariot_opts), "elysium_efi.img" if args.efi else "elysium_bios.img")
+image_path = os.path.join(
+    chariot_utils.path("custom/image", chariot_opts),
+    "elysium_efi.img" if args.efi else "elysium_bios.img",
+)
 
 qemu_args = ["qemu-ovmf-x86-64" if args.efi else "qemu-system-x86_64"]
 qemu_args.extend(["-drive", f"format=raw,file={image_path}"])
