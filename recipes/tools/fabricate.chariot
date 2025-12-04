@@ -1,6 +1,6 @@
 source/fabricate {
     url: "https://github.com/elysium-os/fabricate.git"
-    revision: "64f391c8f36e77179237a824d8f371b23f94a83e"
+    revision: "fdcc9b8aa0642c404871e95baa4c5e98ba60cca2"
     type: "git"
 }
 
