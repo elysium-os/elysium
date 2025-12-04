@@ -39,7 +39,7 @@ package/cronus {
             --option=arch=$OPTION_arch
 
             run-clang-tidy \
-                -source-filter "^.*\/cronus\\/.*\\.c\$" \
+                -source-filter "^.*/cronus/.*\\.c\$" \
                 -load /usr/local/lib/clang-tidy-plugins/libelysium-tidy.so \
                 -config-file $SOURCES_DIR/cronus/.clang-tidy \
                 -use-color
