@@ -1,0 +1,18 @@
+source/llvm_git {
+    url: "https://github.com/llvm/llvm-project.git"
+    revision: "fc92e4dec9a6dfcb4fb77d863d0bf1dbc53033e5"
+    type: "git"
+}
+
+tool/clangd {
+    dependencies: [ source/llvm_git image/build-essential image/cmake image/ninja-build *image/libgrpc++-dev image/protobuf-compiler-grpc image/libprotobuf-dev ]
+    configure: <sh>
+        cmake $SOURCES_DIR/llvm_git/llvm -G Ninja -DCMAKE_BUILD_TYPE=Release -DCLANGD_ENABLE_REMOTE=On -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra"
+    </sh>
+    build: <sh>
+        cmake --build $BUILD_DIR --target clangd
+    </sh>
+    install: <sh>
+        install -D bin/clangd $INSTALL_DIR$PREFIX/bin/clangd
+    </sh>
+}
