@@ -19,7 +19,14 @@
                     wget # Required by Chariot
                     libarchive # Required by Chariot
 
-                    python3 # Used heavily by tools
+                    python3 # Required by scripts
+
+                    # Required by initsys scripts
+                    python313Packages.pyelftools
+                    python313Packages.libclang
+                    python313Packages.pyvis
+                    python313Packages.networkx
+                    python313Packages.termcolor
 
                     llvmPackages_20.clang-tools # clang-format & clang-tidy
 

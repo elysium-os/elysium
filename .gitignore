@@ -1,2 +1,4 @@
 .chariot-*
-log.txt
+
+/log.txt
+/init_graph
