@@ -35,7 +35,7 @@ recipes = [
 ]
 
 if chariot_utils.build(recipes, chariot_opts).returncode != 0:
-    print("Build failed, not running qemu")
+    print("Build failed, not running qemu", file=sys.stderr)
     exit(1)
 
 # Run QEMU

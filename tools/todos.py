@@ -2,11 +2,12 @@
 
 import os
 import re
+import sys
 
 import chariot_utils
 
 if chariot_utils.build(["source/cronus"]).returncode != 0:
-    print("Failed to update cronus source, exiting")
+    print("Failed to update cronus source, exiting", file=sys.stderr)
     exit(1)
 
 source_dir = chariot_utils.path("source/cronus")

@@ -7,7 +7,7 @@ import sys
 import chariot_utils
 
 if len(sys.argv) < 2:
-    print("Usage: dump.py <address>")
+    print("Usage: dump.py <address>", file=sys.stderr)
     sys.exit(1)
 
 start_address = int(sys.argv[1], 16)

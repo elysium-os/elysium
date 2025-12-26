@@ -10,7 +10,7 @@ project_path = dirname(dirname(abspath(__file__)))
 recipe_source_path = os.getcwd()
 
 if len(sys.argv) < 3:
-    print("Usage: chariot_clangd.py <package> <source name>")
+    print("Usage: chariot_clangd.py <package> <source name>", file=sys.stderr)
     sys.exit(1)
 
 mappings = [f"{recipe_source_path}=$SOURCES_DIR/{sys.argv[2]}"]
