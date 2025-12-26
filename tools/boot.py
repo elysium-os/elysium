@@ -3,6 +3,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 import chariot_utils
 
@@ -12,15 +13,12 @@ parser.add_argument("--efi", action="store_true")
 parser.add_argument("-t", "--buildtype", default="debug", choices=["debug", "release"])
 parser.add_argument("--accel", default="kvm", choices=["kvm", "tcg"])
 parser.add_argument("--debug", action="store_true")
-parser.add_argument(
-    "-d", "--display", default="default", choices=["default", "headless", "vnc"]
-)
+parser.add_argument("-d", "--display", default="default", choices=["default", "headless", "vnc"])
 parser.add_argument("-n", "--cores", type=int, default=4)
 parser.add_argument("--gdb", action="store_true")
 parser.add_argument("--tcg", action="store_const", const="tcg", dest="accel")
-parser.add_argument(
-    "--headless", action="store_const", const="headless", dest="display"
-)
+parser.add_argument("--headless", action="store_const", const="headless", dest="display")
+parser.add_argument("-m", "--mem", "--memory", type=str, default="256M")
 
 args = parser.parse_args()
 
@@ -47,7 +45,7 @@ image_path = os.path.join(
 qemu_args = ["qemu-ovmf-x86-64" if args.efi else "qemu-system-x86_64"]
 qemu_args.extend(["-drive", f"format=raw,file={image_path}"])
 
-qemu_args.extend(["-m", "512M"])
+qemu_args.extend(["-m", args.mem])
 qemu_args.extend(["-machine", "q35"])
 qemu_args.extend(["-cpu", "qemu64,+pdpe1gb,+invtsc,+pcid"])
 qemu_args.extend(["-vga", "virtio"])
