@@ -3,9 +3,7 @@ import subprocess
 
 
 def config_path():
-    return os.path.join(
-        os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "config.chariot"
-    )
+    return os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "config.chariot")
 
 
 def path(recipe, options=[]):
@@ -24,6 +22,4 @@ def path(recipe, options=[]):
 
 
 def build(recipes, options=[]):
-    return subprocess.run(
-        ["chariot", "--config", config_path(), *options, "build", *recipes]
-    )
+    return subprocess.run(["chariot", "--config", config_path(), *options, "build", *recipes])
