@@ -37,14 +37,17 @@ package/cronus {
             --depdir=uacpi=$SOURCES_DIR/uacpi \
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch
-
-            run-clang-tidy \
-                -source-filter "^.*/cronus/.*\\.c\$" \
-                -load /usr/local/lib/clang-tidy-plugins/libelysium-tidy.so \
-                -config-file $SOURCES_DIR/cronus/.clang-tidy \
-                -use-color
     </sh>
-    build: <sh>ninja -j$PARALLELISM</sh>
+    build: <sh>
+        run-clang-tidy \
+            -load /usr/local/lib/clang-tidy-plugins/libelysium-tidy.so \
+            -source-filter "^.*/cronus/.*\\.c\$" \
+            -header-filter "^.*/cronus/.*\\.h\$" \
+            -config-file $SOURCES_DIR/cronus/.clang-tidy \
+            -use-color
+
+        ninja -j$PARALLELISM
+    </sh>
     install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
 }
 
