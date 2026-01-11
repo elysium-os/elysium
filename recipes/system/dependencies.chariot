@@ -1,0 +1,11 @@
+source/cc_runtime {
+    url: "https://codeberg.org/OSDev/cc-runtime.git"
+    revision: "dae79833b57a01b9fd3e359ee31def69f5ae899b"
+    type: "git"
+}
+
+source/pico_efi {
+    url: "https://codeberg.org/PicoEFI/PicoEFI.git"
+    revision: "8b79fdaa72ee548a8ea24e3dc4d87bf281312865"
+    type: "git"
+}

@@ -1,0 +1,59 @@
+@collection image_deps = [
+    source/image_support
+
+    tool/mkimg
+
+    image/llvm
+    image/qemu-utils
+]
+
+source/image_support {
+    url: "support/image"
+    type: "local"
+}
+
+custom/image {
+    dependencies: [
+        collection/image_deps
+        package/tartarus
+    ]
+    always_clean: "yes"
+    build: <sh>
+        ROOT_FILES=${SOURCES_DIR}/image_support/tartarus.cfg
+
+        mkimg \
+            --protective-mbr \
+            --dest elysium_bios.img \
+            --bootsector ${SYSROOT_DIR}${PREFIX}/share/tartarus/x86_64-bios.bin \
+            --partition type=file:name=Tartarus:gpt-type=54524154-5241-5355-424F-4F5450415254:file=${SYSROOT_DIR}${PREFIX}/share/tartarus/tartarus.sys \
+            --partition type=fs:gpt-type=454C5953-4955-4D52-4F4F-545041525458:fs-type=fat32:fs-size=64:fs-files=${ROOT_FILES}
+
+        qemu-img convert -O vmdk elysium_bios.img elysium_bios.vmdk
+    </sh>
+    install: <sh>
+        cp elysium_bios.img $INSTALL_DIR
+        cp elysium_bios.vmdk $INSTALL_DIR
+    </sh>
+}
+
+custom/image_efi {
+    dependencies: [
+        collection/image_deps
+        package/tartarus_efi
+    ]
+    always_clean: "yes"
+    build: <sh>
+        ROOT_FILES=${SOURCES_DIR}/image_support/tartarus.cfg
+
+        mkimg \
+            --protective-mbr \
+            --dest elysium_efi.img \
+            --partition type=fs:name=ESP:gpt-type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B:fs-type=fat32:fs-size=128:fs-files=${ROOT_FILES}#${SYSROOT_DIR}${PREFIX}/share/tartarus/tartarus.efi@/EFI/BOOT/BOOTX64.EFI
+
+        qemu-img convert -O vmdk elysium_efi.img elysium_efi.vmdk
+    </sh>
+    install: <sh>
+        cp elysium_efi.img $INSTALL_DIR
+        cp elysium_efi.vmdk $INSTALL_DIR
+    </sh>
+}

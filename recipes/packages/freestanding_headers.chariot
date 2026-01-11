@@ -1,0 +1,25 @@
+source/freestanding_c_headers {
+    url: "https://github.com/osdev0/freestnd-c-hdrs.git"
+    type: "git"
+    revision: "5e11c3da645d8f203e93dc23703b14a15c5b7afc"
+}
+
+source/freestanding_cxx_headers {
+    url: "https://github.com/osdev0/freestnd-cxx-hdrs.git"
+    type: "git"
+    revision: "9d6a92ab19a57140f1e3ecc6668014d7f46094b6"
+}
+
+package/freestanding_c_headers {
+    dependencies: [ source/freestanding_c_headers ]
+    install: <sh>
+        DESTDIR=$INSTALL_DIR PREFIX=$PREFIX make -C $SOURCES_DIR/freestanding_c_headers install
+    </sh>
+}
+
+package/freestanding_cxx_headers {
+    dependencies: [ source/freestanding_cxx_headers ]
+    install: <sh>
+        DESTDIR=$INSTALL_DIR PREFIX=$PREFIX make -C $SOURCES_DIR/freestanding_cxx_headers install
+    </sh>
+}
