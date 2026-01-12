@@ -27,14 +27,13 @@ package/cronus {
     ]
     options: [ "buildtype", "arch" ]
     configure: <sh>
-        fabricate configure \
-            --builddir=$BUILD_DIR \
+        fabricate --build-dir=$BUILD_DIR setup \
             --config=$SOURCES_DIR/cronus/fab.lua \
             --prefix=/sys \
-            --depdir=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
-            --depdir=cc-runtime=$SOURCES_DIR/cc_runtime \
-            --depdir=tartarus=$SOURCES_DIR/tartarus \
-            --depdir=uacpi=$SOURCES_DIR/uacpi \
+            --dependency-override=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
+            --dependency-override=cc-runtime=$SOURCES_DIR/cc_runtime \
+            --dependency-override=tartarus=$SOURCES_DIR/tartarus \
+            --dependency-override=uacpi=$SOURCES_DIR/uacpi \
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch
     </sh>
@@ -48,7 +47,7 @@ package/cronus {
 
         ninja -j$PARALLELISM
     </sh>
-    install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
+    install: <sh>fabricate --build-dir=$BUILD_DIR install --dest-dir=$INSTALL_DIR</sh>
 }
 
 package/modules {
@@ -64,23 +63,24 @@ package/modules {
 
         image/nasm
         image/clang
+        image/llvm
+        image/lld
         image/ninja-build
     ]
     options: [ "buildtype", "arch" ]
     configure: <sh>
-        fabricate configure \
-            --builddir=$BUILD_DIR \
+        fabricate --build-dir=$BUILD_DIR setup \
             --config=$SOURCES_DIR/cronus/fab.lua \
             --prefix=/sys \
-            --depdir=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
-            --depdir=cc-runtime=$SOURCES_DIR/cc_runtime \
-            --depdir=tartarus=$SOURCES_DIR/tartarus \
-            --depdir=uacpi=$SOURCES_DIR/uacpi \
+            --dependency-override=freestanding-c-headers=$SOURCES_DIR/freestanding_c_headers \
+            --dependency-override=cc-runtime=$SOURCES_DIR/cc_runtime \
+            --dependency-override=tartarus=$SOURCES_DIR/tartarus \
+            --dependency-override=uacpi=$SOURCES_DIR/uacpi \
             --option=buildtype=$OPTION_buildtype \
             --option=arch=$OPTION_arch \
             --option=build_kernel=no \
             --option=build_modules="test_pmm test_vm"
     </sh>
     build: <sh>ninja -j$PARALLELISM</sh>
-    install: <sh>fabricate install --builddir=$BUILDDIR --destdir=$INSTALL_DIR</sh>
+    install: <sh>fabricate --build-dir=$BUILD_DIR install --dest-dir=$INSTALL_DIR</sh>
 }

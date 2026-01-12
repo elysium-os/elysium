@@ -19,6 +19,7 @@ parser.add_argument("--gdb", action="store_true")
 parser.add_argument("--tcg", action="store_const", const="tcg", dest="accel")
 parser.add_argument("--headless", action="store_const", const="headless", dest="display")
 parser.add_argument("-m", "--mem", "--memory", type=str, default="256M")
+parser.add_argument("--dumpasm", action="store_true")
 
 args = parser.parse_args()
 
@@ -63,7 +64,7 @@ qemu_args.extend(["-accel", args.accel])
 qemu_args.extend(["-M", "smm=off"])
 qemu_args.extend(["-k", "en-us"])
 
-qemu_args.extend(["-d", "int,fpu,guest_errors"])
+qemu_args.extend(["-d", f"int,fpu,guest_errors{',in_asm,cpu' if args.dumpasm else ''}"])
 qemu_args.extend(["-D", "./log.txt"])
 qemu_args.extend(["-monitor", "stdio"])
 qemu_args.extend(["-debugcon", "file:/dev/stdout"])
